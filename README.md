@@ -7,14 +7,23 @@
 This project is under construction and will not be available until this notice is removed.  
 
 ## Overview
-"SimpleSafeDB" is an in-memory database for the front-end.   
-With this database, you can register class structures as they are in the database,   
-and search elements of the registered classes in a type-safe manner.  
-  
-This package does not incorporate search speed-up techniques such as index creation,  
-and searches are performed directly in memory.
-For this reason, if you are using it with large amounts of data or if you need fast search speed,  
-I recommend using a general database.  
+"SimpleSafeDB" is an in-memory database for the front-end.  
+This database allows you to register class structures as they are in the database,  
+and allows full-text searches of the elements of the registered classes.  
+In addition, queries are also classes, and can have DB operation information consisting of   
+who, when, what, why, and from.  
+If serialized and saved, it provides a very rich source of information for security audits and 
+usage analysis.  
+This is particularly useful in projects with various constraints, such as medical use.  
+In addition, for when, the TemporalTrace class has a complete tracing function for   
+the communication path and each arrival time.  
+I I think this would be useful, for example, in space-scale communication networks,   
+where even the speed of light introduces significant delays.  
+
+This package does not incorporate search acceleration methods such as index creation,  
+and searches are performed directly on memory.  
+For this reason, we currently recommend using a general database when using large-scale data or   
+when search speed is required.  
 
 ## Usage
 Under developing.  

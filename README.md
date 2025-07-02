@@ -29,9 +29,8 @@ when search speed is required.
 Under developing.  
 
 ## Support
-Basically no support.  
-If you have any problem please open an issue on Github.
-This package is low priority, but may be fixed.
+As this is an experimental project for future use, there is no support.   
+If you have any problems, please open an issue on Github.  
 
 ## About version control
 The C part will be changed at the time of version upgrade.  

@@ -108,8 +108,8 @@ class SimpleSafeDatabase extends CloneableFile {
           return col.search(q);
         case EnumQueryType.conformToTemplate:
           return col.conformToTemplate(q);
-        case EnumQueryType.rename:
-          return col.rename(q);
+        case EnumQueryType.renameField:
+          return col.renameField(q);
         case EnumQueryType.count:
           return col.count();
         case EnumQueryType.clear:

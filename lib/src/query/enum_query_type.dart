@@ -5,7 +5,7 @@ enum EnumQueryType {
   delete,
   search,
   conformToTemplate, // DB shape change.
-  rename, // DB field name change
+  renameField, // DB field name change
   count, // get all items count.
   clear, // delete all items.
 }

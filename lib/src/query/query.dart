@@ -26,11 +26,10 @@ class Query extends CloneableFile {
   int? offset;
   Map<String, dynamic>? startAfter;
   Map<String, dynamic>? endBefore;
-  int? limit;
-  bool? returnUpdated;
-  bool? returnDeleted;
   String? renameBefore;
   String? renameAfter;
+  int? limit;
+  bool returnData;
   Cause? cause;
 
   /// * [target] : The target DB name.
@@ -49,11 +48,10 @@ class Query extends CloneableFile {
   /// * [offset] :
   /// * [startAfter] :
   /// * [endBefore] :
-  /// * [limit] :
-  /// * [returnUpdated] : If true, return the updated objs. (update or updateOne type only.)
-  /// * [returnDeleted] : If true, return the deleted objs. (delete type only.)
   /// * [renameBefore] : use rename type only.
   /// * [renameAfter] : use rename type only.
+  /// * [limit] :
+  /// * [returnData] : If true, return the changed objs.
   /// * [cause] :
   Query({
     required this.target,
@@ -66,11 +64,10 @@ class Query extends CloneableFile {
     this.offset,
     this.startAfter,
     this.endBefore,
-    this.limit,
-    this.returnUpdated,
-    this.returnDeleted,
     this.renameBefore,
     this.renameAfter,
+    this.limit,
+    this.returnData = false,
     this.cause,
   });
 
@@ -88,12 +85,11 @@ class Query extends CloneableFile {
       offset: src["offset"],
       startAfter: src["startAfter"],
       endBefore: src["endBefore"],
-      limit: src["limit"],
-      returnUpdated: src["returnUpdated"],
-      returnDeleted: src["returnDeleted"],
       renameBefore: src["renameBefore"],
       renameAfter: src["renameAfter"],
-      cause: Cause.fromDict(src["cause"]),
+      limit: src["limit"],
+      returnData: src["returnUpdated"],
+      cause: src["cause"] != null ? Cause.fromDict(src["cause"]) : null,
     );
   }
 
@@ -112,11 +108,10 @@ class Query extends CloneableFile {
       "offset": offset,
       "startAfter": startAfter,
       "endBefore": endBefore,
-      "limit": limit,
-      "returnUpdated": returnUpdated,
-      "returnDeleted": returnDeleted,
       "renameBefore": renameBefore,
       "renameAfter": renameAfter,
+      "limit": limit,
+      "returnUpdated": returnData,
       "cause": cause?.toDict(),
     };
   }

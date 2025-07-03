@@ -12,9 +12,10 @@ class QueryBuilder {
   int? offset = 0;
   Map<String, dynamic>? startAfter;
   Map<String, dynamic>? endBefore;
+  String? renameBefore;
+  String? renameAfter;
   int? limit;
-  bool returnUpdated = false;
-  bool returnDeleted = false;
+  bool returnData = false;
   Cause? cause;
 
   QueryBuilder.add({required this.target, required this.data, this.cause})
@@ -24,7 +25,7 @@ class QueryBuilder {
     required this.target,
     required this.queryNode,
     required this.update,
-    required this.returnUpdated,
+    required this.returnData,
     this.sortObj,
     this.cause,
   }) : type = EnumQueryType.update;
@@ -33,14 +34,14 @@ class QueryBuilder {
     required this.target,
     required this.queryNode,
     required this.update,
-    required this.returnUpdated,
+    required this.returnData,
     this.cause,
   }) : type = EnumQueryType.updateOne;
 
   QueryBuilder.delete({
     required this.target,
     required this.queryNode,
-    required this.returnDeleted,
+    required this.returnData,
     this.sortObj,
     this.cause,
   }) : type = EnumQueryType.delete;
@@ -61,6 +62,14 @@ class QueryBuilder {
     required this.template,
     this.cause,
   }) : type = EnumQueryType.conformToTemplate;
+
+  QueryBuilder.renameField({
+    required this.target,
+    required this.renameBefore,
+    required this.renameAfter,
+    required this.returnData,
+    this.cause,
+  }) : type = EnumQueryType.renameField;
 
   QueryBuilder.count({required this.target, this.cause})
     : type = EnumQueryType.count;
@@ -91,9 +100,10 @@ class QueryBuilder {
       offset: offset,
       startAfter: startAfter,
       endBefore: endBefore,
+      renameBefore: renameBefore,
+      renameAfter: renameAfter,
       limit: limit,
-      returnUpdated: returnUpdated,
-      returnDeleted: returnDeleted,
+      returnData: returnData,
       cause: cause,
     );
   }

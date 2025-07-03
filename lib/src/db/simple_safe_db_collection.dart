@@ -47,7 +47,7 @@ class Collection extends CollectionBase {
 
   /// クエリーにマッチするオブジェクトを更新します。
   QueryResult<T> update<T>(Query q) {
-    if (q.returnUpdated!) {
+    if (q.returnData) {
       List<Map<String, dynamic>> r = [];
       for (int i = 0; i < _data.length; i++) {
         if (_evaluate(_data[i], q.queryNode!)) {
@@ -75,7 +75,7 @@ class Collection extends CollectionBase {
   /// シリアル番号を含めて探索している場合など、対象が１件であることが分かっている場合は
   /// updateよりも高速に動作します。
   QueryResult<T> updateOne<T>(Query q) {
-    if (q.returnUpdated!) {
+    if (q.returnData) {
       List<Map<String, dynamic>> r = [];
       for (int i = 0; i < _data.length; i++) {
         if (_evaluate(_data[i], q.queryNode!)) {
@@ -98,7 +98,7 @@ class Collection extends CollectionBase {
 
   /// クエリーにマッチするオブジェクトを削除します。
   QueryResult<T> delete<T>(Query q) {
-    if (q.returnDeleted!) {
+    if (q.returnData) {
       final List<Map<String, dynamic>> deletedItems = [];
       _data.removeWhere((item) {
         final shouldDelete = _evaluate(item, q.queryNode!);
@@ -191,7 +191,9 @@ class Collection extends CollectionBase {
     return QueryResult<T>(true, [], length);
   }
 
-  QueryResult<T> rename<T>(Query q) {
+  QueryResult<T> renameField<T>(Query q) {
+    List<Map<String, dynamic>> r = [];
+    int count = 0;
     for (Map<String, dynamic> item in _data) {
       if (!item.containsKey(q.renameBefore!)) {
         throw ArgumentError("The target key does not exist.");
@@ -201,8 +203,12 @@ class Collection extends CollectionBase {
       }
       item[q.renameAfter!] = item[q.renameBefore!];
       item.remove(q.renameBefore!);
+      count += 1;
+      if (q.returnData) {
+        r.add(item);
+      }
     }
-    return QueryResult<T>(true, [], length);
+    return QueryResult<T>(true, r, count);
   }
 
   QueryResult<T> count<T>() {

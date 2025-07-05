@@ -6,31 +6,41 @@ class QueryResult<T> extends CloneableFile {
   static const String version = "1";
   bool isNoErrors;
   List<Map<String, dynamic>> result;
-  int count;
+  int dbLength;
+  int updateCount;
+  int hitCount;
 
   /// * [isNoErrors] : 操作が成功したかどうかのフラグ。
   /// これはエラーが発生していないかどうかを表すため、検索や更新数が0でもtrueになります。
   /// * [result] : 検索結果、更新結果、削除されたオブジェクトなど。
-  /// * [count] : クエリタイプがsearchの場合は検索でヒットした対象の総数です。
-  /// ページングのためにリミットをかけている場合でも、対象となる項目の総数が返ります。
-  /// addやconformToTemplate、rename、countではDB内のデータの総数が返されます。
-  /// updateやupdateOneの場合は更新された総数が返されます。
-  /// deleteの場合は削除された数が返ります。
-  /// clearの場合は常に0が返ります。
-  /// resultがfalseになる場合（エラーの場合）は常に-1になります。
-  QueryResult(this.isNoErrors, this.result, this.count);
+  /// * [dbLength] : DB内のデータの総数。
+  /// * [updateCount] : 更新、または削除されたデータの総数。
+  /// * [hitCount] : 検索対象になったデータの総数。
+  QueryResult({
+    required this.isNoErrors,
+    required this.result,
+    required this.dbLength,
+    required this.updateCount,
+    required this.hitCount,
+  });
 
   factory QueryResult.fromDict(Map<String, dynamic> src) {
-    return QueryResult<T>(src["isNoErrors"], src["result"], src["count"]);
+    return QueryResult<T>(
+      isNoErrors: src["isNoErrors"],
+      result: src["result"],
+      dbLength: src["dbLength"],
+      updateCount: src["updateCount"],
+      hitCount: src["hitCount"],
+    );
   }
 
   /// 検索結果を指定クラスの配列で取得します。
-  /// * [toClass] : クラスTがCloneableFileである場合、
+  /// * [fromDict] : クラスTがCloneableFileである場合、
   /// 辞書からオブジェクトを復元するためのfromDict相当の関数を渡します。
-  List<T> convert(T Function(Map<String, dynamic>) toClass) {
+  List<T> convert(T Function(Map<String, dynamic>) fromDict) {
     List<T> r = [];
     for (Map<String, dynamic> i in result) {
-      r.add(toClass(i));
+      r.add(fromDict(i));
     }
     return r;
   }
@@ -47,7 +57,9 @@ class QueryResult<T> extends CloneableFile {
       "version": version,
       "isNoErrors": isNoErrors,
       "result": result,
-      "count": count,
+      "dbLength": dbLength,
+      "updateCount": updateCount,
+      "hitCount": hitCount,
     };
   }
 }

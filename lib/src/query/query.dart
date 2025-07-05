@@ -18,8 +18,8 @@ class Query extends CloneableFile {
 
   String target;
   EnumQueryType type;
-  List<Map<String, dynamic>>? data;
-  Map<String, dynamic>? update;
+  List<Map<String, dynamic>>? addData;
+  Map<String, dynamic>? overrideData;
   Map<String, dynamic>? template;
   QueryNode? queryNode;
   SortObj? sortObj;
@@ -34,10 +34,10 @@ class Query extends CloneableFile {
 
   /// * [target] : The target DB name.
   /// * [type] : The query type.
-  /// * [data] : Data specified when performing an add or addAll operation.
+  /// * [addData] : Data specified when performing an add or addAll operation.
   /// Typically, this is assigned the list that results from calling toDict on
   /// a subclass of ClonableFile.
-  /// * [update] : This is not a serialized version of the full class,
+  /// * [overrideData] : This is not a serialized version of the full class,
   /// but a dictionary containing only the parameters you want to update.
   /// * [template] : Specify this when changing the structure of the DB class.
   /// Fields that do not exist in the existing structure but exist in the
@@ -56,8 +56,8 @@ class Query extends CloneableFile {
   Query({
     required this.target,
     required this.type,
-    this.data,
-    this.update,
+    this.addData,
+    this.overrideData,
     this.template,
     this.queryNode,
     this.sortObj,
@@ -75,8 +75,8 @@ class Query extends CloneableFile {
     return Query(
       target: src["target"],
       type: EnumQueryType.values.byName(src["type"]),
-      data: src["data"],
-      update: src["update"],
+      addData: src["addData"],
+      overrideData: src["overrideData"],
       template: src["template"],
       queryNode: src["queryNode"] != null
           ? QueryNode.fromDict(src["queryNode"])
@@ -88,7 +88,7 @@ class Query extends CloneableFile {
       renameBefore: src["renameBefore"],
       renameAfter: src["renameAfter"],
       limit: src["limit"],
-      returnData: src["returnUpdated"],
+      returnData: src["returnData"],
       cause: src["cause"] != null ? Cause.fromDict(src["cause"]) : null,
     );
   }
@@ -100,8 +100,8 @@ class Query extends CloneableFile {
       "version": version,
       "target": target,
       "type": type.name,
-      "data": data,
-      "update": update,
+      "addData": addData,
+      "overrideData": overrideData,
       "template": template,
       "queryNode": queryNode?.toDict(),
       "sortObj": sortObj?.toDict(),
@@ -111,7 +111,7 @@ class Query extends CloneableFile {
       "renameBefore": renameBefore,
       "renameAfter": renameAfter,
       "limit": limit,
-      "returnUpdated": returnData,
+      "returnData": returnData,
       "cause": cause?.toDict(),
     };
   }

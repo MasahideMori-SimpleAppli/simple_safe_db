@@ -117,7 +117,13 @@ class SimpleSafeDatabase extends CloneableFile {
       }
     } catch (e) {
       debugPrint(e.toString());
-      return QueryResult(false, [], -1);
+      return QueryResult(
+        isNoErrors: false,
+        result: [],
+        dbLength: col.length,
+        updateCount: -1,
+        hitCount: -1,
+      );
     }
   }
 }

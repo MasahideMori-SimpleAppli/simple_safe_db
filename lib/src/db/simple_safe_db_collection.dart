@@ -41,8 +41,14 @@ class Collection extends CollectionBase {
   int get length => _data.length;
 
   QueryResult<T> addAll<T>(Query q) {
-    _data.addAll(q.data!);
-    return QueryResult<T>(true, [], length);
+    _data.addAll(q.addData!);
+    return QueryResult<T>(
+      isNoErrors: true,
+      result: [],
+      dbLength: length,
+      updateCount: 0,
+      hitCount: 0,
+    );
   }
 
   /// クエリーにマッチするオブジェクトを更新します。
@@ -51,23 +57,35 @@ class Collection extends CollectionBase {
       List<Map<String, dynamic>> r = [];
       for (int i = 0; i < _data.length; i++) {
         if (_evaluate(_data[i], q.queryNode!)) {
-          _data[i].addAll(q.update!);
+          _data[i].addAll(q.overrideData!);
           r.add(_data[i]);
         }
       }
       if (q.sortObj != null) {
         r.sort(q.sortObj!.getComparator());
       }
-      return QueryResult<T>(true, r, r.length);
+      return QueryResult<T>(
+        isNoErrors: true,
+        result: r,
+        dbLength: length,
+        updateCount: r.length,
+        hitCount: r.length,
+      );
     } else {
       int count = 0;
       for (int i = 0; i < _data.length; i++) {
         if (_evaluate(_data[i], q.queryNode!)) {
-          _data[i].addAll(q.update!);
+          _data[i].addAll(q.overrideData!);
           count += 1;
         }
       }
-      return QueryResult<T>(true, [], count);
+      return QueryResult<T>(
+        isNoErrors: true,
+        result: [],
+        dbLength: length,
+        updateCount: count,
+        hitCount: count,
+      );
     }
   }
 
@@ -79,20 +97,44 @@ class Collection extends CollectionBase {
       List<Map<String, dynamic>> r = [];
       for (int i = 0; i < _data.length; i++) {
         if (_evaluate(_data[i], q.queryNode!)) {
-          _data[i].addAll(q.update!);
+          _data[i].addAll(q.overrideData!);
           r.add(_data[i]);
-          return QueryResult<T>(true, r, r.length);
+          return QueryResult<T>(
+            isNoErrors: true,
+            result: r,
+            dbLength: length,
+            updateCount: r.length,
+            hitCount: r.length,
+          );
         }
       }
-      return QueryResult<T>(true, r, r.length);
+      return QueryResult<T>(
+        isNoErrors: true,
+        result: r,
+        dbLength: length,
+        updateCount: r.length,
+        hitCount: r.length,
+      );
     } else {
       for (int i = 0; i < _data.length; i++) {
         if (_evaluate(_data[i], q.queryNode!)) {
-          _data[i].addAll(q.update!);
-          return QueryResult<T>(true, [], 1);
+          _data[i].addAll(q.overrideData!);
+          return QueryResult<T>(
+            isNoErrors: true,
+            result: [],
+            dbLength: length,
+            updateCount: 1,
+            hitCount: 1,
+          );
         }
       }
-      return QueryResult<T>(true, [], 0);
+      return QueryResult<T>(
+        isNoErrors: true,
+        result: [],
+        dbLength: length,
+        updateCount: 0,
+        hitCount: 0,
+      );
     }
   }
 
@@ -110,7 +152,13 @@ class Collection extends CollectionBase {
       if (q.sortObj != null) {
         deletedItems.sort(q.sortObj!.getComparator());
       }
-      return QueryResult<T>(true, deletedItems, deletedItems.length);
+      return QueryResult<T>(
+        isNoErrors: true,
+        result: deletedItems,
+        dbLength: length,
+        updateCount: deletedItems.length,
+        hitCount: deletedItems.length,
+      );
     } else {
       int count = 0;
       _data.removeWhere((item) {
@@ -120,7 +168,13 @@ class Collection extends CollectionBase {
         }
         return shouldDelete;
       });
-      return QueryResult<T>(true, [], count);
+      return QueryResult<T>(
+        isNoErrors: true,
+        result: [],
+        dbLength: length,
+        updateCount: count,
+        hitCount: count,
+      );
     }
   }
 
@@ -131,7 +185,7 @@ class Collection extends CollectionBase {
         r.add(_data[i]);
       }
     }
-    final int totalCount = r.length;
+    final int hitCount = r.length;
     if (q.sortObj != null) {
       final sorted = [...r];
       sorted.sort(q.sortObj!.getComparator());
@@ -169,7 +223,13 @@ class Collection extends CollectionBase {
         r = r.take(q.limit!).toList();
       }
     }
-    return QueryResult<T>(true, r, totalCount);
+    return QueryResult<T>(
+      isNoErrors: true,
+      result: r,
+      dbLength: length,
+      updateCount: 0,
+      hitCount: hitCount,
+    );
   }
 
   QueryResult<T> conformToTemplate<T>(Query q) {
@@ -188,12 +248,17 @@ class Collection extends CollectionBase {
         }
       }
     }
-    return QueryResult<T>(true, [], length);
+    return QueryResult<T>(
+      isNoErrors: true,
+      result: [],
+      dbLength: length,
+      updateCount: length,
+      hitCount: length,
+    );
   }
 
   QueryResult<T> renameField<T>(Query q) {
     List<Map<String, dynamic>> r = [];
-    int count = 0;
     for (Map<String, dynamic> item in _data) {
       if (!item.containsKey(q.renameBefore!)) {
         throw ArgumentError("The target key does not exist.");
@@ -203,21 +268,39 @@ class Collection extends CollectionBase {
       }
       item[q.renameAfter!] = item[q.renameBefore!];
       item.remove(q.renameBefore!);
-      count += 1;
       if (q.returnData) {
         r.add(item);
       }
     }
-    return QueryResult<T>(true, r, count);
+    return QueryResult<T>(
+      isNoErrors: true,
+      result: r,
+      dbLength: length,
+      updateCount: length,
+      hitCount: length,
+    );
   }
 
   QueryResult<T> count<T>() {
-    return QueryResult<T>(true, [], length);
+    return QueryResult<T>(
+      isNoErrors: true,
+      result: [],
+      dbLength: length,
+      updateCount: 0,
+      hitCount: length,
+    );
   }
 
   QueryResult<T> clear<T>() {
+    final int preLen = length;
     _data.clear();
-    return QueryResult<T>(true, [], 0);
+    return QueryResult<T>(
+      isNoErrors: true,
+      result: [],
+      dbLength: 0,
+      updateCount: preLen,
+      hitCount: preLen,
+    );
   }
 
   bool _evaluate(Map<String, dynamic> record, QueryNode node) =>

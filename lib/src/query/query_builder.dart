@@ -4,8 +4,8 @@ import 'package:simple_safe_db/simple_safe_db.dart';
 class QueryBuilder {
   String target;
   EnumQueryType type;
-  List<CloneableFile>? data;
-  Map<String, dynamic>? update;
+  List<CloneableFile>? addData;
+  Map<String, dynamic>? overrideData;
   CloneableFile? template;
   QueryNode? queryNode;
   SortObj? sortObj;
@@ -18,13 +18,13 @@ class QueryBuilder {
   bool returnData = false;
   Cause? cause;
 
-  QueryBuilder.add({required this.target, required this.data, this.cause})
+  QueryBuilder.add({required this.target, required this.addData, this.cause})
     : type = EnumQueryType.add;
 
   QueryBuilder.update({
     required this.target,
     required this.queryNode,
-    required this.update,
+    required this.overrideData,
     required this.returnData,
     this.sortObj,
     this.cause,
@@ -33,7 +33,7 @@ class QueryBuilder {
   QueryBuilder.updateOne({
     required this.target,
     required this.queryNode,
-    required this.update,
+    required this.overrideData,
     required this.returnData,
     this.cause,
   }) : type = EnumQueryType.updateOne;
@@ -82,8 +82,8 @@ class QueryBuilder {
   /// (ja) 内容を確定してクエリーオブジェクトに変換します。
   Query build() {
     List<Map<String, dynamic>>? mData = [];
-    if (data != null) {
-      for (CloneableFile i in data!) {
+    if (addData != null) {
+      for (CloneableFile i in addData!) {
         mData.add(i.toDict());
       }
     } else {
@@ -92,8 +92,8 @@ class QueryBuilder {
     return Query(
       target: target,
       type: type,
-      data: mData,
-      update: update,
+      addData: mData,
+      overrideData: overrideData,
       template: template?.toDict(),
       queryNode: queryNode,
       sortObj: sortObj,

@@ -180,7 +180,7 @@ void main() {
       result2[0].createdAt.millisecondsSinceEpoch == now.millisecondsSinceEpoch,
       true,
     );
-
+    // paging
     final Query q3 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldStartsWith('name', 'サンプル'),
@@ -196,6 +196,24 @@ void main() {
     List<User> result3 = r3.convert(User.fromDict);
     expect(result3.length == 2, true);
     expect(result3[0].name == 'サンプル太郎', true);
+    expect(result3[1].name == 'サンプル花子', true);
+    // pagingByOffset
+    final Query q3Offset = QueryBuilder.search(
+      target: 'users',
+      queryNode: FieldStartsWith('name', 'サンプル'),
+      sortObj: SortObj(field: 'age', reversed: true),
+      limit: 2,
+      offset: 2,
+    ).build();
+    final QueryResult<User> r3Offset = db.executeQuery<User>(
+      Query.fromDict(q3Offset.toDict()),
+    );
+    expect(r3Offset.dbLength == 4, true);
+    expect(r3Offset.hitCount == 4, true);
+    List<User> result3Offset = r3Offset.convert(User.fromDict);
+    expect(result3Offset.length == 2, true);
+    expect(result3Offset[0].name == 'サンプル太郎', true);
+    expect(result3Offset[1].name == 'サンプル花子', true);
 
     // update
     final Query q4 = QueryBuilder.update(

@@ -5,7 +5,7 @@ repository: https://github.com/MasahideMori-SimpleAppli/simple_safe_db
 
 environment:
   sdk: ^3.8.1
-  flutter: ">=1.17.0"
+  flutter: ">=3.27.0"
 
 dependencies:
   flutter:
@@ -17,11 +17,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  simple_jwt_manager: ^0.0.29
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
-flutter:
-

@@ -217,6 +217,24 @@ class FieldIn extends QueryNode {
   };
 }
 
+class FieldNotIn extends QueryNode {
+  final String field;
+  final Iterable<dynamic> values;
+
+  FieldNotIn(this.field, this.values);
+
+  @override
+  bool evaluate(Map<String, dynamic> data) =>
+      !values.contains(UtilField.getNestedFieldValue(data, field));
+
+  @override
+  Map<String, dynamic> toDict() => {
+    'type': 'not_in',
+    'field': field,
+    'values': values.toList(),
+  };
+}
+
 class FieldStartsWith extends QueryNode {
   final String field;
   final String value;

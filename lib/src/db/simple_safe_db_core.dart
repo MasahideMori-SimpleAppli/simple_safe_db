@@ -1,5 +1,4 @@
 import 'package:file_state_manager/file_state_manager.dart';
-import 'package:flutter/foundation.dart';
 import 'package:simple_safe_db/src/db/simple_safe_db_collection.dart';
 import 'package:simple_safe_db/src/query/enum_query_type.dart';
 import 'package:simple_safe_db/src/query/query.dart';
@@ -94,36 +93,25 @@ class SimpleSafeDatabase extends CloneableFile {
   /// 行ってください。
   QueryResult<T> executeQuery<T>(Query q) {
     Collection col = collection(q.target);
-    try {
-      switch (q.type) {
-        case EnumQueryType.add:
-          return col.addAll(q);
-        case EnumQueryType.update:
-          return col.update(q);
-        case EnumQueryType.updateOne:
-          return col.updateOne(q);
-        case EnumQueryType.delete:
-          return col.delete(q);
-        case EnumQueryType.search:
-          return col.search(q);
-        case EnumQueryType.conformToTemplate:
-          return col.conformToTemplate(q);
-        case EnumQueryType.renameField:
-          return col.renameField(q);
-        case EnumQueryType.count:
-          return col.count();
-        case EnumQueryType.clear:
-          return col.clear();
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-      return QueryResult(
-        isNoErrors: false,
-        result: [],
-        dbLength: col.length,
-        updateCount: -1,
-        hitCount: -1,
-      );
+    switch (q.type) {
+      case EnumQueryType.add:
+        return col.addAll(q);
+      case EnumQueryType.update:
+        return col.update(q);
+      case EnumQueryType.updateOne:
+        return col.updateOne(q);
+      case EnumQueryType.delete:
+        return col.delete(q);
+      case EnumQueryType.search:
+        return col.search(q);
+      case EnumQueryType.conformToTemplate:
+        return col.conformToTemplate(q);
+      case EnumQueryType.renameField:
+        return col.renameField(q);
+      case EnumQueryType.count:
+        return col.count();
+      case EnumQueryType.clear:
+        return col.clear();
     }
   }
 }

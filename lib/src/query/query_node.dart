@@ -40,6 +40,8 @@ abstract class QueryNode {
         return FieldContains(map['field'], map['value']);
       case 'in':
         return FieldIn(map['field'], List.from(map['values']));
+      case 'not_in':
+        return FieldIn(map['field'], List.from(map['values']));
       case 'starts_with':
         return FieldStartsWith(map['field'], map['value']);
       case 'ends_with':

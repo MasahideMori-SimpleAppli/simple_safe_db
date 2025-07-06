@@ -9,6 +9,7 @@ class QueryResult<T> extends CloneableFile {
   int dbLength;
   int updateCount;
   int hitCount;
+  String? errorMessage;
 
   /// * [isNoErrors] : 操作が成功したかどうかのフラグ。
   /// これはエラーが発生していないかどうかを表すため、検索や更新数が0でもtrueになります。
@@ -16,12 +17,14 @@ class QueryResult<T> extends CloneableFile {
   /// * [dbLength] : DB内のデータの総数。
   /// * [updateCount] : 更新、または削除されたデータの総数。
   /// * [hitCount] : 検索対象になったデータの総数。
+  /// * [errorMessage] : エラー発生時のみ追加されるメッセージ。
   QueryResult({
     required this.isNoErrors,
     required this.result,
     required this.dbLength,
     required this.updateCount,
     required this.hitCount,
+    this.errorMessage,
   });
 
   factory QueryResult.fromDict(Map<String, dynamic> src) {
@@ -31,6 +34,7 @@ class QueryResult<T> extends CloneableFile {
       dbLength: src["dbLength"],
       updateCount: src["updateCount"],
       hitCount: src["hitCount"],
+      errorMessage: src["errorMessage"],
     );
   }
 
@@ -60,6 +64,7 @@ class QueryResult<T> extends CloneableFile {
       "dbLength": dbLength,
       "updateCount": updateCount,
       "hitCount": hitCount,
+      "errorMessage": errorMessage,
     };
   }
 }

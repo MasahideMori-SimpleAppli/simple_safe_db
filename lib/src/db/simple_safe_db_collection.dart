@@ -45,7 +45,7 @@ class Collection extends CollectionBase {
     return QueryResult<T>(
       isNoErrors: true,
       result: [],
-      dbLength: length,
+      dbLength: _data.length,
       updateCount: 0,
       hitCount: 0,
     );
@@ -67,7 +67,7 @@ class Collection extends CollectionBase {
       return QueryResult<T>(
         isNoErrors: true,
         result: r,
-        dbLength: length,
+        dbLength: _data.length,
         updateCount: r.length,
         hitCount: r.length,
       );
@@ -82,7 +82,7 @@ class Collection extends CollectionBase {
       return QueryResult<T>(
         isNoErrors: true,
         result: [],
-        dbLength: length,
+        dbLength: _data.length,
         updateCount: count,
         hitCount: count,
       );
@@ -102,7 +102,7 @@ class Collection extends CollectionBase {
           return QueryResult<T>(
             isNoErrors: true,
             result: r,
-            dbLength: length,
+            dbLength: _data.length,
             updateCount: r.length,
             hitCount: r.length,
           );
@@ -111,7 +111,7 @@ class Collection extends CollectionBase {
       return QueryResult<T>(
         isNoErrors: true,
         result: r,
-        dbLength: length,
+        dbLength: _data.length,
         updateCount: r.length,
         hitCount: r.length,
       );
@@ -122,7 +122,7 @@ class Collection extends CollectionBase {
           return QueryResult<T>(
             isNoErrors: true,
             result: [],
-            dbLength: length,
+            dbLength: _data.length,
             updateCount: 1,
             hitCount: 1,
           );
@@ -131,7 +131,7 @@ class Collection extends CollectionBase {
       return QueryResult<T>(
         isNoErrors: true,
         result: [],
-        dbLength: length,
+        dbLength: _data.length,
         updateCount: 0,
         hitCount: 0,
       );
@@ -155,7 +155,7 @@ class Collection extends CollectionBase {
       return QueryResult<T>(
         isNoErrors: true,
         result: deletedItems,
-        dbLength: length,
+        dbLength: _data.length,
         updateCount: deletedItems.length,
         hitCount: deletedItems.length,
       );
@@ -171,7 +171,7 @@ class Collection extends CollectionBase {
       return QueryResult<T>(
         isNoErrors: true,
         result: [],
-        dbLength: length,
+        dbLength: _data.length,
         updateCount: count,
         hitCount: count,
       );
@@ -226,7 +226,7 @@ class Collection extends CollectionBase {
     return QueryResult<T>(
       isNoErrors: true,
       result: r,
-      dbLength: length,
+      dbLength: _data.length,
       updateCount: 0,
       hitCount: hitCount,
     );
@@ -251,23 +251,39 @@ class Collection extends CollectionBase {
     return QueryResult<T>(
       isNoErrors: true,
       result: [],
-      dbLength: length,
-      updateCount: length,
-      hitCount: length,
+      dbLength: _data.length,
+      updateCount: _data.length,
+      hitCount: _data.length,
     );
   }
 
   QueryResult<T> renameField<T>(Query q) {
+    int updateCount = 0;
     List<Map<String, dynamic>> r = [];
     for (Map<String, dynamic> item in _data) {
       if (!item.containsKey(q.renameBefore!)) {
-        throw ArgumentError("The target key does not exist.");
+        return QueryResult<T>(
+          isNoErrors: false,
+          result: r,
+          dbLength: _data.length,
+          updateCount: updateCount,
+          hitCount: updateCount,
+          errorMessage: 'The target key does not exist.',
+        );
       }
       if (item.containsKey(q.renameAfter!)) {
-        throw ArgumentError("An existing key was specified as the new key.");
+        return QueryResult<T>(
+          isNoErrors: false,
+          result: r,
+          dbLength: _data.length,
+          updateCount: updateCount,
+          hitCount: updateCount,
+          errorMessage: 'An existing key was specified as the new key.',
+        );
       }
       item[q.renameAfter!] = item[q.renameBefore!];
       item.remove(q.renameBefore!);
+      updateCount += 1;
       if (q.returnData) {
         r.add(item);
       }
@@ -275,9 +291,9 @@ class Collection extends CollectionBase {
     return QueryResult<T>(
       isNoErrors: true,
       result: r,
-      dbLength: length,
-      updateCount: length,
-      hitCount: length,
+      dbLength: _data.length,
+      updateCount: updateCount,
+      hitCount: updateCount,
     );
   }
 
@@ -285,14 +301,14 @@ class Collection extends CollectionBase {
     return QueryResult<T>(
       isNoErrors: true,
       result: [],
-      dbLength: length,
+      dbLength: _data.length,
       updateCount: 0,
-      hitCount: length,
+      hitCount: _data.length,
     );
   }
 
   QueryResult<T> clear<T>() {
-    final int preLen = length;
+    final int preLen = _data.length;
     _data.clear();
     return QueryResult<T>(
       isNoErrors: true,

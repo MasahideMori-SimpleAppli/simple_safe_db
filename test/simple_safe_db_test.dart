@@ -8,6 +8,7 @@ class User extends CloneableFile {
   final int age;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final Map<String, dynamic> nestedObj;
 
   User({
     required this.id,
@@ -15,6 +16,7 @@ class User extends CloneableFile {
     required this.age,
     required this.createdAt,
     required this.updatedAt,
+    required this.nestedObj,
   });
 
   static User fromDict(Map<String, dynamic> src) => User(
@@ -23,6 +25,7 @@ class User extends CloneableFile {
     age: src['age'],
     createdAt: DateTime.fromMillisecondsSinceEpoch(src['createdAt']),
     updatedAt: DateTime.fromMillisecondsSinceEpoch(src['updatedAt']),
+    nestedObj: src['nestedObj'],
   );
 
   @override
@@ -33,6 +36,7 @@ class User extends CloneableFile {
     'createdAt': createdAt.millisecondsSinceEpoch,
     // This will automatically update the update date.
     'updatedAt': DateTime.now().millisecondsSinceEpoch,
+    'nestedObj': nestedObj,
   };
 
   @override
@@ -117,10 +121,38 @@ void main() {
     final Query q1 = QueryBuilder.add(
       target: 'users',
       addData: [
-        User(id: '1', name: 'サンプル太郎', age: 25, createdAt: now, updatedAt: now),
-        User(id: '2', name: 'サンプル次郎', age: 28, createdAt: now, updatedAt: now),
-        User(id: '3', name: 'サンプル三郎', age: 31, createdAt: now, updatedAt: now),
-        User(id: '4', name: 'サンプル花子', age: 17, createdAt: now, updatedAt: now),
+        User(
+          id: '1',
+          name: 'サンプル太郎',
+          age: 25,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {},
+        ),
+        User(
+          id: '2',
+          name: 'サンプル次郎',
+          age: 28,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {},
+        ),
+        User(
+          id: '3',
+          name: 'サンプル三郎',
+          age: 31,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {},
+        ),
+        User(
+          id: '4',
+          name: 'サンプル花子',
+          age: 17,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {},
+        ),
       ],
     ).build();
     final QueryResult<User> r1 = db.executeQuery<User>(
@@ -334,6 +366,7 @@ void main() {
             age: 25,
             createdAt: now,
             updatedAt: now,
+            nestedObj: {},
           ),
           User(
             id: '2',
@@ -341,6 +374,7 @@ void main() {
             age: 28,
             createdAt: now,
             updatedAt: now,
+            nestedObj: {},
           ),
           User(
             id: '3',
@@ -348,6 +382,7 @@ void main() {
             age: 31,
             createdAt: now,
             updatedAt: now,
+            nestedObj: {},
           ),
           User(
             id: '4',
@@ -355,6 +390,7 @@ void main() {
             age: 17,
             createdAt: now,
             updatedAt: now,
+            nestedObj: {},
           ),
         ],
       ).build(),
@@ -398,6 +434,7 @@ void main() {
             age: 25,
             createdAt: now,
             updatedAt: now,
+            nestedObj: {},
           ),
           User(
             id: '2',
@@ -405,6 +442,7 @@ void main() {
             age: 28,
             createdAt: now,
             updatedAt: now,
+            nestedObj: {},
           ),
           User(
             id: '3',
@@ -412,6 +450,7 @@ void main() {
             age: 31,
             createdAt: now,
             updatedAt: now,
+            nestedObj: {},
           ),
           User(
             id: '4',
@@ -419,6 +458,7 @@ void main() {
             age: 17,
             createdAt: now,
             updatedAt: now,
+            nestedObj: {},
           ),
         ],
       ).build(),
@@ -445,5 +485,96 @@ void main() {
         equals(original.createdAt.toIso8601String()),
       );
     }
+  });
+
+  test('complex search test', () {
+    final now = DateTime.now();
+    // データベース作成とデータ追加
+    final db = SimpleSafeDatabase();
+    // add
+    final Query q1 = QueryBuilder.add(
+      target: 'users',
+      addData: [
+        User(
+          id: '1',
+          name: 'サンプル太郎',
+          age: 25,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {"a": "test", "b": 1},
+        ),
+        User(
+          id: '2',
+          name: 'サンプル次郎',
+          age: 28,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {"a": "test", "b": 1},
+        ),
+        User(
+          id: '3',
+          name: 'サンプル三郎',
+          age: 31,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {"a": "text", "b": 2},
+        ),
+        User(
+          id: '4',
+          name: 'サンプル花子',
+          age: 17,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {"a": "text", "b": 3},
+        ),
+      ],
+    ).build();
+    final QueryResult<User> r1 = db.executeQuery<User>(q1);
+    expect(r1.isNoErrors, true);
+    // ネストされたオブジェクトの検索（文字列）
+    final Query q2 = QueryBuilder.search(
+      target: 'users',
+      queryNode: FieldEquals("nestedObj.a", "test"),
+      sortObj: SortObj(field: 'id', reversed: false),
+    ).build();
+    final QueryResult<User> r2 = db.executeQuery<User>(q2);
+    expect(r2.hitCount == 2, true);
+    expect(r2.result.length == 2, true);
+    List<User> result2 = r2.convert(User.fromDict);
+    expect(result2[0].name == "サンプル太郎", true);
+    expect(result2[1].name == "サンプル次郎", true);
+    // ネストされたオブジェクトの検索（数値）
+    final Query q3 = QueryBuilder.search(
+      target: 'users',
+      queryNode: FieldLessThan("nestedObj.b", 2),
+      sortObj: SortObj(field: 'id', reversed: false),
+    ).build();
+    final QueryResult<User> r3 = db.executeQuery<User>(q3);
+    expect(r3.hitCount == 2, true);
+    expect(r3.result.length == 2, true);
+    List<User> result3 = r3.convert(User.fromDict);
+    expect(result3[0].name == "サンプル太郎", true);
+    expect(result3[1].name == "サンプル次郎", true);
+    // 正規表現での検索
+    final Query q4 = QueryBuilder.search(
+      target: 'users',
+      queryNode: FieldMatchesRegex("name", r'サンプル[太次]郎'),
+      sortObj: SortObj(field: 'id', reversed: false),
+    ).build();
+    final QueryResult<User> r4 = db.executeQuery<User>(q4);
+    expect(r4.hitCount == 2, true);
+    expect(r4.result.length == 2, true);
+    List<User> result4 = r4.convert(User.fromDict);
+    expect(result4[0].name == "サンプル太郎", true);
+    expect(result4[1].name == "サンプル次郎", true);
+    // 正規表現でのネストされたオブジェクトの検索
+    final Query q5 = QueryBuilder.search(
+      target: 'users',
+      queryNode: FieldMatchesRegex("nestedObj.a", r'te[sx]t'),
+      sortObj: SortObj(field: 'id', reversed: false),
+    ).build();
+    final QueryResult<User> r5 = db.executeQuery<User>(q5);
+    expect(r5.hitCount == 4, true);
+    expect(r5.result.length == 4, true);
   });
 }

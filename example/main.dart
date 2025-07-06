@@ -107,7 +107,7 @@ void main() async {
   debugPrint("// search");
   debugPrint("return:${searchResult.length}");
   debugPrint("hitCount:${r2.hitCount}");
-  for(User i in searchResult){
+  for (User i in searchResult) {
     debugPrint(i.name);
   }
   // paging option
@@ -123,7 +123,7 @@ void main() async {
   debugPrint("// search (paging)");
   debugPrint("return:${searchResultPaging.length}");
   debugPrint("hitCount:${r2Paging.hitCount}");
-  for(User i in searchResultPaging){
+  for (User i in searchResultPaging) {
     debugPrint(i.name);
   }
 
@@ -143,7 +143,7 @@ void main() async {
   final List<User> updateResult = r3.convert(User.fromDict);
   debugPrint("// update");
   debugPrint("updateCount:${r3.updateCount}");
-  for(User i in updateResult){
+  for (User i in updateResult) {
     debugPrint(i.toDict().toString());
   }
 
@@ -163,7 +163,7 @@ void main() async {
   // output.
   // This package simply converts the contents of the DB into a Map,
   // so it can be extended in various ways, for example to perform encryption.
-  final Map<String,dynamic> jsonMap = db.toDict();
+  final Map<String, dynamic> jsonMap = db.toDict();
 
   // Restoring the database can be completed simply by loading the map.
   final SimpleSafeDatabase resumedDB = SimpleSafeDatabase.fromDict(jsonMap);

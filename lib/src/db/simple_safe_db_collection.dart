@@ -3,8 +3,17 @@ import 'package:file_state_manager/file_state_manager.dart';
 
 import '../../simple_safe_db.dart';
 
+/// (en) An abstract class for classes related to the contents of
+/// classes in the DB.
+///
+/// (ja) DB内のクラス単位の内容に関するクラスの抽象クラス。
 abstract class CollectionBase extends CloneableFile {}
 
+/// (en) This class relates to the contents of each class in the DB.
+/// It implements operations on the DB.
+///
+/// (ja) DB内のクラス単位の内容に関するクラスです。
+/// DBに対する操作などが実装されています。
 class Collection extends CollectionBase {
   static const String className = "Collection";
   static const String version = "1";
@@ -34,12 +43,23 @@ class Collection extends CollectionBase {
     return Collection.fromDict(toDict());
   }
 
-  /// コレクションのリストの参照を返します。直接編集すると危険なため注意してください。
+  /// (en) Returns the stored contents as a reference list.
+  /// Be careful as it is dangerous to edit it directly.
+  ///
+  /// (ja) 保持している内容をリストの参照として返します。
+  /// 直接編集すると危険なため注意してください。
   List<Map<String, dynamic>> get raw => _data;
 
-  /// コレクションのデータ数を返します。
+  /// (en) Returns the number of data in the collection.
+  ///
+  /// (ja) コレクションのデータ数を返します。
   int get length => _data.length;
 
+  /// (en) Adds the data specified by the query.
+  ///
+  /// (ja) クエリで指定されたデータを追加します。
+  ///
+  /// * [q] : The query.
   QueryResult<T> addAll<T>(Query q) {
     _data.addAll(q.addData!);
     return QueryResult<T>(
@@ -51,7 +71,14 @@ class Collection extends CollectionBase {
     );
   }
 
-  /// クエリーにマッチするオブジェクトを更新します。
+  /// (en) Updates the contents of objects that match the query.
+  /// Only provided parameters will be overwritten;
+  /// unprovided parameters will remain unchanged.
+  ///
+  /// (ja) クエリーにマッチするオブジェクトの内容を更新します。
+  /// 与えたパラメータのみが上書き対象になり、与えなかったパラメータは変化しません。
+  ///
+  /// * [q] : The query.
   QueryResult<T> update<T>(Query q) {
     if (q.returnData) {
       List<Map<String, dynamic>> r = [];
@@ -89,9 +116,15 @@ class Collection extends CollectionBase {
     }
   }
 
-  /// クエリーにマッチするオブジェクトを最初の１件だけ更新します。
+  /// (en) Updates the first object that matches the query.
+  /// If you know there is only one object,
+  /// such as when searching by serial number, this works faster than update.
+  ///
+  /// (ja) クエリーにマッチするオブジェクトを最初の１件だけ更新します。
   /// シリアル番号を含めて探索している場合など、対象が１件であることが分かっている場合は
   /// updateよりも高速に動作します。
+  ///
+  /// * [q] : The query.
   QueryResult<T> updateOne<T>(Query q) {
     if (q.returnData) {
       List<Map<String, dynamic>> r = [];
@@ -138,7 +171,11 @@ class Collection extends CollectionBase {
     }
   }
 
-  /// クエリーにマッチするオブジェクトを削除します。
+  /// (en) Deletes objects that match a query.
+  ///
+  /// (ja) クエリーにマッチするオブジェクトを削除します。
+  ///
+  /// * [q] : The query.
   QueryResult<T> delete<T>(Query q) {
     if (q.returnData) {
       final List<Map<String, dynamic>> deletedItems = [];
@@ -178,6 +215,11 @@ class Collection extends CollectionBase {
     }
   }
 
+  /// (en) Finds and returns objects that match a query.
+  ///
+  /// (ja) クエリーにマッチするオブジェクトを検索し、返します。
+  ///
+  /// * [q] : The query.
   QueryResult<T> search<T>(Query q) {
     List<Map<String, dynamic>> r = [];
     for (var i = 0; i < _data.length; i++) {
@@ -232,6 +274,17 @@ class Collection extends CollectionBase {
     );
   }
 
+  /// (en) Changes the structure of the database according to
+  /// the specified template.
+  /// Keys and values that are not in the specified template are deleted.
+  /// Keys that exist only in the specified template are added and
+  /// initialized with the values from the template.
+  ///
+  /// (ja) データベースの構造を、指定のテンプレートに沿って変更します。
+  /// 指定したテンプレートに無いキーと値は削除されます。
+  /// 指定したテンプレートにのみ存在するキーは追加され、テンプレートの値で初期化されます。
+  ///
+  /// * [q] : The query.
   QueryResult<T> conformToTemplate<T>(Query q) {
     for (Map<String, dynamic> item in _data) {
       // 1. 削除処理：itemにあるがtmpに無いキーは削除
@@ -257,6 +310,11 @@ class Collection extends CollectionBase {
     );
   }
 
+  /// (en) Renames the specified key in the database.
+  ///
+  /// (ja) データベースの、指定したキーの名前を変更します。
+  ///
+  /// * [q] : The query.
   QueryResult<T> renameField<T>(Query q) {
     int updateCount = 0;
     List<Map<String, dynamic>> r = [];
@@ -297,6 +355,9 @@ class Collection extends CollectionBase {
     );
   }
 
+  /// (en) Returns the total number of records stored in the database.
+  ///
+  /// (ja) データベースに保存されているデータの総数を返します。
   QueryResult<T> count<T>() {
     return QueryResult<T>(
       isNoErrors: true,
@@ -307,6 +368,9 @@ class Collection extends CollectionBase {
     );
   }
 
+  /// (en) Discards the contents of the database.
+  ///
+  /// (ja) データベースの保存内容を破棄します。
   QueryResult<T> clear<T>() {
     final int preLen = _data.length;
     _data.clear();

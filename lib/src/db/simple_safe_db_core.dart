@@ -4,18 +4,29 @@ import 'package:simple_safe_db/src/query/enum_query_type.dart';
 import 'package:simple_safe_db/src/query/query.dart';
 import 'package:simple_safe_db/src/query/query_result.dart';
 
-/// (ja) 様々な操作の安全性を考慮した、未来志向のデータベースです。
-/// 20年後を想定して作成しており、人間以外にもAIが主な利用者と想定して設計されています。
+/// (en) It is an in-memory database that takes into consideration the
+/// safety of various operations.
+/// It was created with the assumption that in addition to humans,
+/// AI will also be the main users.
+///
+/// (ja) 様々な操作の安全性を考慮したインメモリデータベースです。
+/// 人間以外で、AIも主な利用者であると想定して作成しています。
 class SimpleSafeDatabase extends CloneableFile {
   static const String className = "SimpleSafeDatabase";
   static const String version = "1";
 
   late final Map<String, CollectionBase> _collections;
 
+  /// (en) Create a regular empty database.
+  ///
   /// (ja) 通常の空データベースを作成します。
   SimpleSafeDatabase() : _collections = {};
 
+  /// (en) Restore the database from JSON.
+  ///
   /// (ja) データベースをJSONから復元します。
+  ///
+  /// * [src] : A dictionary made with toDict of this class.
   SimpleSafeDatabase.fromDict(Map<String, dynamic> src)
     : _collections = _parseCollections(src);
 
@@ -44,9 +55,15 @@ class SimpleSafeDatabase extends CloneableFile {
     return r;
   }
 
+  /// (en) If the specified collection exists, it will be retrieved.
+  /// If it does not exist, a new one will be created and retrieved.
+  /// Normally you should not call this directly, but rather operate via queries.
+  ///
   /// (ja) 指定のコレクションが存在すればそれを取得し、
   /// 存在しなければ新しく作成して取得します。
-  /// 通常は直接これを呼び出さず、クエリ経由で操作します。
+  /// 通常は直接これを呼び出さず、クエリ経由で操作してください。
+  ///
+  /// * [name] : The collection name.
   Collection collection(String name) {
     if (_collections.containsKey(name)) {
       return _collections[name] as Collection;
@@ -56,14 +73,29 @@ class SimpleSafeDatabase extends CloneableFile {
     return col;
   }
 
+  /// (en) Saves individual collections as dictionaries.
+  /// For example, you can use this if you want to store a specific collection
+  /// in an encrypted format.
+  ///
   /// (ja) 個別のコレクションを辞書として保存します。
   /// 特定のコレクション単位で暗号化して保存したいような場合に利用できます。
+  ///
+  /// * [name] : The collection name.
   Map<String, dynamic> collectionToDict(String name) =>
       _collections[name]?.toDict() ?? {};
 
-  /// (ja) コレクションを辞書から復元して再登録し、取得します。
+  /// (en) Restores a specific collection from a dictionary, re-registers it,
+  /// and retrieves it.
+  /// If a collection with the same name already exists, it will be overwritten.
+  /// This is typically used to restore data saved with collectionToDict.
+  ///
+  ///
+  /// (ja) 特定のコレクションを辞書から復元して再登録し、取得します。
   /// 既存の同名のコレクションが既にある場合は上書きされます。
   /// 通常は、collectionToDictで保存したデータを復元する際に使用します。
+  ///
+  /// * [name] : The collection name.
+  /// * [src] : A dictionary made with collectionToDict of this class.
   Collection collectionFromDict(String name, Map<String, dynamic> src) {
     final col = Collection.fromDict(src);
     _collections[name] = col;
@@ -88,9 +120,14 @@ class SimpleSafeDatabase extends CloneableFile {
     };
   }
 
+  /// (en) Execute the query.
+  /// Server side, verify that the call is legitimate
+  /// (e.g. by checking the JWT and/or the caller's user permissions)
+  /// before making this call.
+  ///
   /// (ja) クエリを実行します。
-  /// サーバーサイドでは、この呼び出しの前に正規の呼び出しであるかどうかの検証を
-  /// 行ってください。
+  /// サーバーサイドでは、この呼び出しの前に正規の呼び出しであるかどうかの
+  /// 検証(JWTのチェックや呼び出し元ユーザーの権限のチェック)を行ってください。
   QueryResult<T> executeQuery<T>(Query q) {
     Collection col = collection(q.target);
     switch (q.type) {

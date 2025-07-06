@@ -26,11 +26,15 @@ For this reason, we currently recommend using a general database when using larg
 when search speed is required.  
 
 ## Usage
-Under developing.  
+Please check out the Examples tab in pub.dev.  
+Also, if you need a more complex example than the examples, check out the test folder.  
 
 ## Support
 As this is an experimental project for future use, there is no support.   
 If you have any problems, please open an issue on Github.  
+However, since it is an in-memory database, it is generally fast.  
+There is usually no problem with about 100,000 records.  
+I recommend that you test it in an actual environment using speed_test.dart in the test folder.  
 
 ## About version control
 The C part will be changed at the time of version upgrade.  

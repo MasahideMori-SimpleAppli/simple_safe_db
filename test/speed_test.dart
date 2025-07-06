@@ -48,12 +48,13 @@ class User extends CloneableFile {
 
 void main() {
   test('speed test', () {
-    debugPrint("speed test for 100000 records");
+    final int recordsCount = 100000;
+    debugPrint("speed test for${recordsCount}records");
     final now = DateTime.now();
     // データベース作成とデータ追加
     final db = SimpleSafeDatabase();
     List<User> users = [];
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < recordsCount; i++) {
       users.add(
         User(
           id: '1',

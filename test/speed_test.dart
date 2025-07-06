@@ -77,6 +77,24 @@ void main() {
     );
     expect(r1.isNoErrors, true);
 
+    // save
+    debugPrint("start save");
+    dt1 = DateTime.now();
+    final dbMap = db.toDict();
+    dt2 = DateTime.now();
+    debugPrint(
+      "end save: ${dt2.millisecondsSinceEpoch - dt1.millisecondsSinceEpoch} ms",
+    );
+
+    // load
+    debugPrint("start load");
+    dt1 = DateTime.now();
+    final _ = SimpleSafeDatabase.fromDict(dbMap);
+    dt2 = DateTime.now();
+    debugPrint(
+      "end load: ${dt2.millisecondsSinceEpoch - dt1.millisecondsSinceEpoch} ms",
+    );
+
     // search
     final Query q2 = QueryBuilder.search(
       target: 'users',
@@ -91,6 +109,52 @@ void main() {
       "end search: ${dt2.millisecondsSinceEpoch - dt1.millisecondsSinceEpoch} ms",
     );
     debugPrint("returnsLength:${r2.result.length}");
+
+    // search (paging obj)
+    final Query q2Paging = QueryBuilder.search(
+      target: 'users',
+      queryNode: FieldStartsWith("name", "sample"),
+      sortObj: SortObj(field: 'age'),
+      limit: 50000,
+    ).build();
+    debugPrint("start search paging");
+    dt1 = DateTime.now();
+    final QueryResult<User> r2Paging = db.executeQuery<User>(q2Paging);
+    dt2 = DateTime.now();
+    debugPrint(
+      "end search paging: ${dt2.millisecondsSinceEpoch - dt1.millisecondsSinceEpoch} ms",
+    );
+    debugPrint("returnsLength:${r2Paging.result.length}");
+    final Query q2PagingByObj = QueryBuilder.search(
+      target: 'users',
+      queryNode: FieldStartsWith("name", "sample"),
+      sortObj: SortObj(field: 'age'),
+      startAfter: r2Paging.result.last,
+    ).build();
+    debugPrint("start search paging by obj");
+    dt1 = DateTime.now();
+    final QueryResult<User> r2PagingObj = db.executeQuery<User>(q2PagingByObj);
+    dt2 = DateTime.now();
+    debugPrint(
+      "end search paging by obj: ${dt2.millisecondsSinceEpoch - dt1.millisecondsSinceEpoch} ms",
+    );
+    debugPrint("returnsLength:${r2PagingObj.result.length}");
+    final Query q2PagingOffset = QueryBuilder.search(
+      target: 'users',
+      queryNode: FieldStartsWith("name", "sample"),
+      sortObj: SortObj(field: 'age'),
+      offset: 50000,
+    ).build();
+    debugPrint("start search paging by offset");
+    dt1 = DateTime.now();
+    final QueryResult<User> r2PagingOffset = db.executeQuery<User>(
+      q2PagingOffset,
+    );
+    dt2 = DateTime.now();
+    debugPrint(
+      "end search paging by offset: ${dt2.millisecondsSinceEpoch - dt1.millisecondsSinceEpoch} ms",
+    );
+    debugPrint("returnsLength:${r2PagingOffset.result.length}");
 
     // update
     final Query q3 = QueryBuilder.update(

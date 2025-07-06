@@ -17,13 +17,14 @@ usage analysis.
 This is particularly useful in projects with various constraints, such as medical use.  
 In addition, for when, the TemporalTrace class has a complete tracing function for   
 the communication path and each arrival time.  
-I I think this would be useful, for example, in space-scale communication networks,   
+I think this would be useful, for example, in space-scale communication networks,   
 where even the speed of light introduces significant delays.  
 
-This package does not incorporate search acceleration methods such as index creation,  
-and searches are performed directly on memory.  
-For this reason, we currently recommend using a general database when using large-scale data or   
-when search speed is required.  
+This package is an in-memory database, so it is generally fast.  
+There is usually no problem with around 100,000 records.  
+I recommend that you test it in an actual environment using speed_test.dart in the test folder.  
+However, since it consumes RAM capacity according to the amount of data,  
+if you need an extremely large database, consider using a general database.  
 
 ## Usage
 Please check out the Examples tab in pub.dev.  

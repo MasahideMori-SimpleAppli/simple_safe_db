@@ -58,11 +58,11 @@ class User2 extends CloneableFile {
     required this.gender,
   });
 
-  static User2 fromDict(Map<String, dynamic> dict) => User2(
-    id: dict['id'],
-    name: dict['name'],
-    age: dict['age'],
-    gender: dict['gender'],
+  static User2 fromDict(Map<String, dynamic> src) => User2(
+    id: src['id'],
+    name: src['name'],
+    age: src['age'],
+    gender: src['gender'],
   );
 
   @override
@@ -92,11 +92,11 @@ class User3 extends CloneableFile {
     required this.gender,
   });
 
-  static User3 fromDict(Map<String, dynamic> dict) => User3(
-    serialID: dict['serialID'],
-    name: dict['name'],
-    age: dict['age'],
-    gender: dict['gender'],
+  static User3 fromDict(Map<String, dynamic> src) => User3(
+    serialID: src['serialID'],
+    name: src['name'],
+    age: src['age'],
+    gender: src['gender'],
   );
 
   @override

@@ -157,4 +157,15 @@ void main() async {
   final QueryResult<User> deleteResult = db.executeQuery<User>(q4);
   debugPrint("// delete");
   debugPrint("dbLength:${deleteResult.dbLength}");
+
+  // save and load
+  // You can save it using your favorite package or using standard input and
+  // output.
+  // This package simply converts the contents of the DB into a Map,
+  // so it can be extended in various ways, for example to perform encryption.
+  final Map<String,dynamic> jsonMap = db.toDict();
+
+  // Restoring the database can be completed simply by loading the map.
+  final SimpleSafeDatabase resumedDB = SimpleSafeDatabase.fromDict(jsonMap);
+  debugPrint("resumedDB users length:${resumedDB.collection('users').length}");
 }

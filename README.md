@@ -3,9 +3,6 @@
 (en)Japanese ver is [here](https://github.com/MasahideMori-SimpleAppli/simple_safe_db/blob/main/README_JA.md).  
 (ja)この解説の日本語版は[ここ](https://github.com/MasahideMori-SimpleAppli/simple_safe_db/blob/main/README_JA.md)にあります。
 
-## Caution
-This project is under construction and will not be available until this notice is removed.  
-
 ## Overview
 "SimpleSafeDB" is an in-memory database that stores data in units of lists of classes.
 This database allows you to register class structures as they are in the database,  
@@ -70,6 +67,7 @@ Please check out the Examples tab in pub.dev.
 Also, if you need a more complex example than the examples, check out the test folder.  
 
 ## Support
+There is no support, but bugs are likely to be fixed.
 If you find any issues, please open an issue on Github.
 
 ## About version control

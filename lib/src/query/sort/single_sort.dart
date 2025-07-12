@@ -1,15 +1,27 @@
 import 'package:file_state_manager/file_state_manager.dart';
+import 'package:simple_safe_db/src/query/sort/abstract_sort.dart';
 import 'package:simple_safe_db/src/query/util_filed.dart';
 
-class SortObj extends CloneableFile {
-  static const String className = "SortObj";
+/// (en) This class allows you to specify single-key sorting for
+/// the return values of a query.
+///
+/// (ja) クエリの戻り値について、単一キーでのソートを指定するためのクラスです。
+class SingleSort extends CloneableFile implements AbstractSort {
+  static const String className = "SingleSort";
   static const String version = "1";
   late String field;
   late bool reversed;
 
-  SortObj({required this.field, this.reversed = false});
+  /// * [field] : The name of the variable within the class to use for sorting.
+  /// * [reversed] : Specifies whether to reverse the sort result.
+  SingleSort({required this.field, this.reversed = false});
 
-  SortObj.fromDict(Map<String, dynamic> src) {
+  /// (en) Restore this object from the dictionary.
+  ///
+  /// (ja) このオブジェクトを辞書から復元します。
+  ///
+  /// * [src] : A dictionary made with toDict of this class.
+  SingleSort.fromDict(Map<String, dynamic> src) {
     field = src["field"];
     reversed = src["reversed"] ?? false;
   }
@@ -25,10 +37,11 @@ class SortObj extends CloneableFile {
   }
 
   @override
-  SortObj clone() {
-    return SortObj.fromDict(toDict());
+  SingleSort clone() {
+    return SingleSort.fromDict(toDict());
   }
 
+  @override
   Comparator<Map<String, dynamic>> getComparator() {
     return (Map<String, dynamic> a, Map<String, dynamic> b) {
       final aValue = UtilField.getNestedFieldValue(a, field);

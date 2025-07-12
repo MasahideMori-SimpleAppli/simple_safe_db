@@ -27,6 +27,11 @@ class QueryResult<T> extends CloneableFile {
     this.errorMessage,
   });
 
+  /// (en) Restore this object from the dictionary.
+  ///
+  /// (ja) このオブジェクトを辞書から復元します。
+  ///
+  /// * [src] : A dictionary made with toDict of this class.
   factory QueryResult.fromDict(Map<String, dynamic> src) {
     return QueryResult<T>(
       isNoErrors: src["isNoErrors"],

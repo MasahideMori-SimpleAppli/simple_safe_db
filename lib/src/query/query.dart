@@ -1,5 +1,6 @@
 import 'package:file_state_manager/file_state_manager.dart';
 import 'package:simple_safe_db/simple_safe_db.dart';
+import 'package:simple_safe_db/src/query/sort/abstract_sort.dart';
 
 /// (en) This is a query class for DB operations. It is usually built using
 /// QueryBuilder.
@@ -22,7 +23,7 @@ class Query extends CloneableFile {
   Map<String, dynamic>? overrideData;
   Map<String, dynamic>? template;
   QueryNode? queryNode;
-  SortObj? sortObj;
+  AbstractSort? sortObj;
   int? offset;
   Map<String, dynamic>? startAfter;
   Map<String, dynamic>? endBefore;
@@ -32,27 +33,65 @@ class Query extends CloneableFile {
   bool returnData;
   Cause? cause;
 
-  /// * [target] : The target DB name.
+  /// Note: I recommend not using this class as is,
+  /// but rather using the more convenient QueryBuilder.
+  ///
+  /// * [target] : The collection name in DB.
   /// * [type] : The query type.
-  /// * [addData] : Data specified when performing an add or addAll operation.
+  /// * [addData] : Use add type only.
+  /// Data specified when performing an add operation.
   /// Typically, this is assigned the list that results from calling toDict on
   /// a subclass of ClonableFile.
-  /// * [overrideData] : This is not a serialized version of the full class,
+  /// * [overrideData] : Use update or updateOne type only.
+  /// This is not a serialized version of the full class,
   /// but a dictionary containing only the parameters you want to update.
-  /// * [template] : Specify this when changing the structure of the DB class.
+  /// * [template] : Use conformToTemplate type only.
+  /// Specify this when changing the structure of the DB class.
   /// Fields that do not exist in the existing structure but exist in the
   /// template will be added with the template value as the initial value.
   /// Fields that do not exist in the template will be deleted.
-  /// * [queryNode] :
-  /// * [sortObj] :
-  /// * [offset] :
-  /// * [startAfter] :
-  /// * [endBefore] :
-  /// * [renameBefore] : use rename type only.
-  /// * [renameAfter] : use rename type only.
-  /// * [limit] :
+  /// * [queryNode] : This is the node object used for the search.
+  /// You can build queries by combining the various nodes defined in
+  /// query_node_variations.dart.
+  /// * [sortObj] : An object for sorting the return values.
+  /// SingleSort or MultiSort can be used.
+  /// If you set returnData to true, the return values of an update or delete
+  /// query will be sorted by this object.
+  /// * [offset] : Use search type only.
+  /// An offset for paging support in the front end.
+  /// This is only valid when sorting is specified, and allows you to specify
+  /// that the results returned will be from a specific index after sorting.
+  /// * [startAfter] : Use search type only.
+  /// If you pass in a serialized version of a search result
+  /// object, the search will return results from objects after that object,
+  /// and if an offset is specified, it will be ignored.
+  /// This does not work if there are multiple identical objects because it
+  /// compares the object values, and is slightly slower than specifying an
+  /// offset, but it works fine even if new objects are added during the search.
+  /// * [endBefore] : Use search type only.
+  /// If you pass in a serialized version of a search result
+  /// object, the search will return results from the object before that one,
+  /// and any offset or startAfter specified will be ignored.
+  /// This does not work if there are multiple identical objects because it
+  /// compares the object values, and is slightly slower than specifying an
+  /// offset, but it works fine even if new objects are added during the search.
+  /// * [renameBefore] : Use rename type only.
+  /// The old variable name when querying for a rename.
+  /// * [renameAfter] : Use rename type only.
+  /// The new name of the variable when querying for a rename.
+  /// * [limit] : Use search type only.
+  /// The maximum number of search results will be limited to this value.
+  /// If specified together with offset or startAfter,
+  /// limit number of objects after the specified object will be returned.
+  /// If specified together with endBefore,
+  /// limit number of objects before the specified object will be returned.
   /// * [returnData] : If true, return the changed objs.
-  /// * [cause] :
+  /// * [cause] : You can add further parameters such as why this query was
+  /// made and who made it.
+  /// This is useful if you have high security requirements or want to run the
+  /// program autonomously using artificial intelligence.
+  /// By saving the entire query including this as a log,
+  /// the DB history is recorded.
   Query({
     required this.target,
     required this.type,
@@ -71,6 +110,11 @@ class Query extends CloneableFile {
     this.cause,
   });
 
+  /// (en) Restore this object from the dictionary.
+  ///
+  /// (ja) このオブジェクトを辞書から復元します。
+  ///
+  /// * [src] : A dictionary made with toDict of this class.
   factory Query.fromDict(Map<String, dynamic> src) {
     return Query(
       target: src["target"],
@@ -81,7 +125,9 @@ class Query extends CloneableFile {
       queryNode: src["queryNode"] != null
           ? QueryNode.fromDict(src["queryNode"])
           : null,
-      sortObj: src["sortObj"] != null ? SortObj.fromDict(src["sortObj"]) : null,
+      sortObj: src["sortObj"] != null
+          ? SingleSort.fromDict(src["sortObj"])
+          : null,
       offset: src["offset"],
       startAfter: src["startAfter"],
       endBefore: src["endBefore"],

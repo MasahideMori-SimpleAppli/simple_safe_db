@@ -1,4 +1,9 @@
+/// (en) This is a utility for field access used in internal DB processing.
+///
+/// (ja) DBの内部処理で利用する、フィールドアクセスに関するユーティリティです。
 class UtilField {
+  /// (en) Functions for accessing nested fields of a dictionary.
+  ///
   /// (ja) 辞書の、ネストされたフィールドにアクセスするための関数です。
   ///
   /// * [map] : 探索したいマップ。

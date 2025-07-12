@@ -124,10 +124,14 @@ class SimpleSafeDatabase extends CloneableFile {
   /// Server side, verify that the call is legitimate
   /// (e.g. by checking the JWT and/or the caller's user permissions)
   /// before making this call.
+  /// Query results are reference-based for memory efficiency,
+  /// so be sure to call QueryResult.convert before using them.
   ///
   /// (ja) クエリを実行します。
   /// サーバーサイドでは、この呼び出しの前に正規の呼び出しであるかどうかの
   /// 検証(JWTのチェックや呼び出し元ユーザーの権限のチェック)を行ってください。
+  /// クエリの結果はメモリ効率のために参照値になっているので、
+  /// 必ずQueryResult.convertを呼び出してから使用してください。
   QueryResult<T> executeQuery<T>(Query q) {
     Collection col = collection(q.target);
     switch (q.type) {
@@ -141,6 +145,8 @@ class SimpleSafeDatabase extends CloneableFile {
         return col.delete(q);
       case EnumQueryType.search:
         return col.search(q);
+      case EnumQueryType.getAll:
+        return col.getAll(q);
       case EnumQueryType.conformToTemplate:
         return col.conformToTemplate(q);
       case EnumQueryType.renameField:

@@ -1,9 +1,14 @@
 import 'package:simple_safe_db/src/query/query_node.dart';
 import 'package:simple_safe_db/src/query/util_filed.dart';
 
+/// (en) Query node for AND operation.
+///
+/// (ja) AND演算のためのクエリノード。
 class AndNode extends QueryNode {
   final List<QueryNode> conditions;
 
+  /// Query node for AND operation.
+  /// * [conditions] : A list of child nodes.
   AndNode(this.conditions);
 
   @override
@@ -17,9 +22,14 @@ class AndNode extends QueryNode {
   };
 }
 
+/// (en) Query node for OR operation.
+///
+/// (ja) OR演算のためのクエリノード。
 class OrNode extends QueryNode {
   final List<QueryNode> conditions;
 
+  /// Query node for OR operation.
+  /// * [conditions] : A list of child nodes.
   OrNode(this.conditions);
 
   @override
@@ -33,9 +43,14 @@ class OrNode extends QueryNode {
   };
 }
 
+/// (en) Query node for NOT operation.
+///
+/// (ja) NOT演算のためのクエリノード。
 class NotNode extends QueryNode {
   final QueryNode condition;
 
+  /// Query node for NOT operation.
+  /// * [conditions] : A child node.
   NotNode(this.condition);
 
   @override
@@ -48,10 +63,16 @@ class NotNode extends QueryNode {
   };
 }
 
+/// (en) Query node for Equals operation.
+///
+/// (ja) Equals演算のためのクエリノード。
 class FieldEquals extends QueryNode {
   final String field;
   final dynamic value;
 
+  /// Query node for Equals (filed == value) operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldEquals(this.field, this.value);
 
   @override
@@ -66,10 +87,16 @@ class FieldEquals extends QueryNode {
   };
 }
 
+/// (en) Query node for NotEquals operation.
+///
+/// (ja) NotEquals演算のためのクエリノード。
 class FieldNotEquals extends QueryNode {
   final String field;
   final dynamic value;
 
+  /// Query node for NotEquals (filed != value) operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldNotEquals(this.field, this.value);
 
   @override
@@ -84,10 +111,16 @@ class FieldNotEquals extends QueryNode {
   };
 }
 
+/// (en) Query node for "field > value" operation.
+///
+/// (ja) "field > value" 演算のためのクエリノード。
 class FieldGreaterThan extends QueryNode {
   final String field;
   final dynamic value;
 
+  /// Query node for "field > value" operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldGreaterThan(this.field, this.value);
 
   @override
@@ -102,10 +135,16 @@ class FieldGreaterThan extends QueryNode {
   };
 }
 
+/// (en) Query node for "field < value" operation.
+///
+/// (ja) "field < value" 演算のためのクエリノード。
 class FieldLessThan extends QueryNode {
   final String field;
   final dynamic value;
 
+  /// Query node for "field < value" operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldLessThan(this.field, this.value);
 
   @override
@@ -120,10 +159,16 @@ class FieldLessThan extends QueryNode {
   };
 }
 
+/// (en) Query node for "field >= value" operation.
+///
+/// (ja) "field >= value" 演算のためのクエリノード。
 class FieldGreaterThanOrEqual extends QueryNode {
   final String field;
   final dynamic value;
 
+  /// Query node for "field >= value" operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldGreaterThanOrEqual(this.field, this.value);
 
   @override
@@ -138,10 +183,16 @@ class FieldGreaterThanOrEqual extends QueryNode {
   };
 }
 
+/// (en) Query node for "field <= value" operation.
+///
+/// (ja) "field <= value" 演算のためのクエリノード。
 class FieldLessThanOrEqual extends QueryNode {
   final String field;
   final dynamic value;
 
+  /// Query node for "field <= value" operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldLessThanOrEqual(this.field, this.value);
 
   @override
@@ -156,10 +207,16 @@ class FieldLessThanOrEqual extends QueryNode {
   };
 }
 
+/// (en) Query node for "RegExp(pattern).hasMatch(field)" operation.
+///
+/// (ja) "RegExp(pattern).hasMatch(field)" 演算のためのクエリノード。
 class FieldMatchesRegex extends QueryNode {
   final String field;
   final String pattern;
 
+  /// Query node for "RegExp(pattern).hasMatch(field)" operation.
+  /// * [field] : The target variable name.
+  /// * [pattern] : The compare pattern of regex.
   FieldMatchesRegex(this.field, this.pattern);
 
   @override
@@ -177,10 +234,16 @@ class FieldMatchesRegex extends QueryNode {
   };
 }
 
+/// (en) Query node for "field.contains(value)" operation.
+///
+/// (ja) "field.contains(value)" 演算のためのクエリノード。
 class FieldContains extends QueryNode {
   final String field;
   final dynamic value;
 
+  /// Query node for "field.contains(value)" operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldContains(this.field, this.value);
 
   @override
@@ -199,10 +262,16 @@ class FieldContains extends QueryNode {
   };
 }
 
+/// (en) Query node for "values.contains(field)" operation.
+///
+/// (ja) "values.contains(field)" 演算のためのクエリノード。
 class FieldIn extends QueryNode {
   final String field;
   final List<dynamic> values;
 
+  /// Query node for "values.contains(field)" operation.
+  /// * [field] : The target variable name.
+  /// * [values] : The compare value.
   FieldIn(this.field, this.values);
 
   @override
@@ -217,10 +286,16 @@ class FieldIn extends QueryNode {
   };
 }
 
+/// (en) Query node for "Not values.contains(field)" operation.
+///
+/// (ja) "Not values.contains(field)" 演算のためのクエリノード。
 class FieldNotIn extends QueryNode {
   final String field;
   final Iterable<dynamic> values;
 
+  /// Query node for "Not values.contains(field)" operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldNotIn(this.field, this.values);
 
   @override
@@ -235,10 +310,16 @@ class FieldNotIn extends QueryNode {
   };
 }
 
+/// (en) Query node for "field.toString().startsWidth(value)" operation.
+///
+/// (ja) "field.toString().startsWidth(value)" 演算のためのクエリノード。
 class FieldStartsWith extends QueryNode {
   final String field;
   final String value;
 
+  /// Query node for "field.toString().startsWidth(value)" operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldStartsWith(this.field, this.value);
 
   @override
@@ -257,10 +338,16 @@ class FieldStartsWith extends QueryNode {
   };
 }
 
+/// (en) Query node for "field.toString().endsWidth(value)" operation.
+///
+/// (ja) "field.toString().endsWidth(value)" 演算のためのクエリノード。
 class FieldEndsWith extends QueryNode {
   final String field;
   final String value;
 
+  /// Query node for "field.toString().endsWidth(value)" operation.
+  /// * [field] : The target variable name.
+  /// * [value] : The compare value.
   FieldEndsWith(this.field, this.value);
 
   @override

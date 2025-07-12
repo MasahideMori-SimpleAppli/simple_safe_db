@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:file_state_manager/file_state_manager.dart';
+import 'dart:convert';
 
 import '../../simple_safe_db.dart';
 
@@ -30,12 +31,21 @@ class Collection extends CollectionBase {
   ///
   /// * [src] : A dictionary made with toDict of this class.
   Collection.fromDict(Map<String, dynamic> src) {
-    _data = src["data"];
+    List<Map<String, dynamic>> mData = [];
+    for (dynamic i in src["data"]) {
+      mData.add(i as Map<String, dynamic>);
+    }
+    _data = mData;
   }
 
   @override
   Map<String, dynamic> toDict() {
-    return {"className": className, "version": version, "data": _data};
+    List<dynamic> jsonData = json.decode(json.encode(_data));
+    List<Map<String, dynamic>> mData = [];
+    for (dynamic i in jsonData) {
+      mData.add(i as Map<String, dynamic>);
+    }
+    return {"className": className, "version": version, "data": mData};
   }
 
   @override
@@ -71,11 +81,11 @@ class Collection extends CollectionBase {
     );
   }
 
-  /// (en) Updates the contents of objects that match the query.
+  /// (en) Updates the contents of all objects that match the query.
   /// Only provided parameters will be overwritten;
   /// unprovided parameters will remain unchanged.
   ///
-  /// (ja) クエリーにマッチするオブジェクトの内容を更新します。
+  /// (ja) クエリーにマッチする全てのオブジェクトの内容を更新します。
   /// 与えたパラメータのみが上書き対象になり、与えなかったパラメータは変化しません。
   ///
   /// * [q] : The query.
@@ -119,10 +129,13 @@ class Collection extends CollectionBase {
   /// (en) Updates the first object that matches the query.
   /// If you know there is only one object,
   /// such as when searching by serial number, this works faster than update.
+  /// However, sorting is disabled, so please use this when there is
+  /// only one item.
   ///
   /// (ja) クエリーにマッチするオブジェクトを最初の１件だけ更新します。
   /// シリアル番号を含めて探索している場合など、対象が１件であることが分かっている場合は
   /// updateよりも高速に動作します。
+  /// ただしソートは無効なため、対象が１件だけである場合に使用してください。
   ///
   /// * [q] : The query.
   QueryResult<T> updateOne<T>(Query q) {
@@ -171,9 +184,9 @@ class Collection extends CollectionBase {
     }
   }
 
-  /// (en) Deletes objects that match a query.
+  /// (en) Deletes all objects that match a query.
   ///
-  /// (ja) クエリーにマッチするオブジェクトを削除します。
+  /// (ja) クエリーにマッチするオブジェクトを全て削除します。
   ///
   /// * [q] : The query.
   QueryResult<T> delete<T>(Query q) {
@@ -222,12 +235,14 @@ class Collection extends CollectionBase {
   /// * [q] : The query.
   QueryResult<T> search<T>(Query q) {
     List<Map<String, dynamic>> r = [];
+    // 検索
     for (var i = 0; i < _data.length; i++) {
       if (_evaluate(_data[i], q.queryNode!)) {
         r.add(_data[i]);
       }
     }
     final int hitCount = r.length;
+    // ソートやページングのオプション
     if (q.sortObj != null) {
       final sorted = [...r];
       sorted.sort(q.sortObj!.getComparator());
@@ -236,25 +251,25 @@ class Collection extends CollectionBase {
         if (q.offset! > 0) {
           r = r.skip(q.offset!).toList();
         }
-      }
-      if (q.startAfter != null) {
-        final equality = const DeepCollectionEquality();
-        final index = r.indexWhere(
-          (item) => equality.equals(item, q.startAfter),
-        );
-        if (index != -1 && index + 1 < r.length) {
-          r = r.sublist(index + 1);
-        } else if (index != -1 && index + 1 >= r.length) {
-          r = [];
-        }
-      }
-      if (q.endBefore != null) {
-        final equality = const DeepCollectionEquality();
-        final index = r.indexWhere(
-          (item) => equality.equals(item, q.endBefore),
-        );
-        if (index != -1) {
-          r = r.sublist(0, index);
+      } else {
+        if (q.startAfter != null) {
+          final equality = const DeepCollectionEquality();
+          final index = r.indexWhere(
+            (item) => equality.equals(item, q.startAfter),
+          );
+          if (index != -1 && index + 1 < r.length) {
+            r = r.sublist(index + 1);
+          } else if (index != -1 && index + 1 >= r.length) {
+            r = [];
+          }
+        } else if (q.endBefore != null) {
+          final equality = const DeepCollectionEquality();
+          final index = r.indexWhere(
+            (item) => equality.equals(item, q.endBefore),
+          );
+          if (index != -1) {
+            r = r.sublist(0, index);
+          }
         }
       }
     }
@@ -264,6 +279,32 @@ class Collection extends CollectionBase {
       } else {
         r = r.take(q.limit!).toList();
       }
+    }
+    return QueryResult<T>(
+      isNoErrors: true,
+      result: r,
+      dbLength: _data.length,
+      updateCount: 0,
+      hitCount: hitCount,
+    );
+  }
+
+  /// (en) Gets all the contents of the collection.
+  /// This is useful if you just want to sort the contents.
+  ///
+  /// (ja) コレクションの内容を全件取得します。
+  /// 内容をソートだけしたいような場合に便利です。
+  ///
+  /// * [q] : The query.
+  QueryResult<T> getAll<T>(Query q) {
+    List<Map<String, dynamic>> r = [];
+    r.addAll(_data);
+    final int hitCount = r.length;
+    // ソートのオプション
+    if (q.sortObj != null) {
+      final sorted = [...r];
+      sorted.sort(q.sortObj!.getComparator());
+      r = sorted;
     }
     return QueryResult<T>(
       isNoErrors: true,
@@ -383,6 +424,7 @@ class Collection extends CollectionBase {
     );
   }
 
+  /// クエリの評価関数。
   bool _evaluate(Map<String, dynamic> record, QueryNode node) =>
       node.evaluate(record);
 }

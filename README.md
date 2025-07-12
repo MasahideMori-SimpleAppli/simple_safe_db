@@ -7,7 +7,7 @@
 This project is under construction and will not be available until this notice is removed.  
 
 ## Overview
-"SimpleSafeDB" is an in-memory database for the front-end.  
+"SimpleSafeDB" is an in-memory database that stores data in units of lists of classes.
 This database allows you to register class structures as they are in the database,  
 and allows full-text searches of the elements of the registered classes.  
 In addition, queries are also classes, and can have DB operation information consisting of   
@@ -17,25 +17,60 @@ usage analysis.
 This is particularly useful in projects with various constraints, such as medical use.  
 In addition, for when, the TemporalTrace class has a complete tracing function for   
 the communication path and each arrival time.  
-I think this would be useful, for example, in space-scale communication networks,   
-where even the speed of light introduces significant delays.  
+I think this would be useful, for example, in space-scale communication networks and relay servers,
+where non-negligible delays occur even at the speed of light.
 
+## Speed
 This package is an in-memory database, so it is generally fast.  
 There is usually no problem with around 100,000 records.  
 I recommend that you test it in an actual environment using speed_test.dart in the test folder.  
 However, since it consumes RAM capacity according to the amount of data,  
 if you need an extremely large database, consider using a general database.  
+For reference, below are the results of a speed test (test/speed_test.dart) run on a slightly  
+older PC equipped with a Ryzen 3600 CPU.  
+The test conditions were chosen to take a sufficiently long time, but I think it will rarely cause   
+any problems in practical use.  
+
+```text
+speed test for 100000 records
+start add
+end add: 5 ms
+start getAll (with object convert)
+end getAll: 122 ms
+returnsLength:100000
+start save (with json string convert)                                                                                                                            
+end save: 527 ms
+start load (with json string convert)
+end load: 243 ms
+start search (with object convert)
+end search: 333 ms
+returnsLength:100000
+start search paging, half limit pre search (with object convert)
+end search paging: 291 ms
+returnsLength:50000
+start search paging by obj (with object convert)
+end search paging by obj: 311 ms
+returnsLength:50000
+start search paging by offset (with object convert)
+end search paging by offset: 262 ms
+returnsLength:50000
+start update at half index and last index object
+end update: 35 ms
+start updateOne of half index object
+end updateOne: 9 ms
+start conformToTemplate
+end conformToTemplate: 59 ms
+start delete half object (with object convert)
+end delete: 142 ms
+returnsLength:50000
+```
 
 ## Usage
 Please check out the Examples tab in pub.dev.  
 Also, if you need a more complex example than the examples, check out the test folder.  
 
 ## Support
-As this is an experimental project for future use, there is no support.   
-If you have any problems, please open an issue on Github.  
-However, since it is an in-memory database, it is generally fast.  
-There is usually no problem with about 100,000 records.  
-I recommend that you test it in an actual environment using speed_test.dart in the test folder.  
+If you find any issues, please open an issue on Github.
 
 ## About version control
 The C part will be changed at the time of version upgrade.  

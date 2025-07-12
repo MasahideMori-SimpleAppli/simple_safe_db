@@ -98,7 +98,7 @@ void main() async {
   final Query q2 = QueryBuilder.search(
     target: 'users',
     queryNode: FieldStartsWith("name", "sample"),
-    sortObj: SortObj(field: 'age'),
+    sortObj: SingleSort(field: 'age'),
     limit: 2,
   ).build();
   final QueryResult<User> r2 = db.executeQuery<User>(q2);
@@ -114,7 +114,7 @@ void main() async {
   final Query q2Paging = QueryBuilder.search(
     target: 'users',
     queryNode: FieldStartsWith("name", "sample"),
-    sortObj: SortObj(field: 'age'),
+    sortObj: SingleSort(field: 'age'),
     limit: 2,
     startAfter: r2.result.last,
   ).build();
@@ -136,7 +136,7 @@ void main() async {
     ]),
     overrideData: {'age': 26},
     returnData: true,
-    sortObj: SortObj(field: 'id'),
+    sortObj: SingleSort(field: 'id'),
   ).build();
   final QueryResult<User> r3 = db.executeQuery<User>(q3);
   // convert to class
@@ -151,7 +151,7 @@ void main() async {
   final Query q4 = QueryBuilder.delete(
     target: 'users',
     queryNode: FieldEquals("name", "sampleD"),
-    sortObj: SortObj(field: 'id'),
+    sortObj: SingleSort(field: 'id'),
     returnData: false,
   ).build();
   final QueryResult<User> deleteResult = db.executeQuery<User>(q4);

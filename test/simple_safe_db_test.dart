@@ -165,7 +165,7 @@ void main() {
     final Query q2 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldStartsWith("name", "サンプル"),
-      sortObj: SortObj(field: 'age', reversed: true),
+      sortObj: SingleSort(field: 'age', reversed: true),
       limit: 2,
     ).build();
     final QueryResult<User> r2 = db.executeQuery<User>(
@@ -184,7 +184,7 @@ void main() {
     final Query q3 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldStartsWith('name', 'サンプル'),
-      sortObj: SortObj(field: 'age', reversed: true),
+      sortObj: SingleSort(field: 'age', reversed: true),
       limit: 2,
       startAfter: r2.result.last,
     ).build();
@@ -201,7 +201,7 @@ void main() {
     final Query q3Offset = QueryBuilder.search(
       target: 'users',
       queryNode: FieldStartsWith('name', 'サンプル'),
-      sortObj: SortObj(field: 'age', reversed: true),
+      sortObj: SingleSort(field: 'age', reversed: true),
       limit: 2,
       offset: 2,
     ).build();
@@ -224,7 +224,7 @@ void main() {
       ]),
       overrideData: {'age': 26},
       returnData: true,
-      sortObj: SortObj(field: 'id'),
+      sortObj: SingleSort(field: 'id'),
     ).build();
     final QueryResult<User> r4 = db.executeQuery<User>(
       Query.fromDict(q4.toDict()),
@@ -240,7 +240,7 @@ void main() {
     final Query q5 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldStartsWith("age", "26"),
-      sortObj: SortObj(field: 'id'),
+      sortObj: SingleSort(field: 'id'),
       limit: 2,
     ).build();
     final QueryResult<User> r5 = db.executeQuery<User>(
@@ -271,7 +271,7 @@ void main() {
     final Query q7 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldStartsWith("age", "26"),
-      sortObj: SortObj(field: 'id'),
+      sortObj: SingleSort(field: 'id'),
       limit: 2,
     ).build();
     final QueryResult<User> r7 = db.executeQuery<User>(
@@ -287,7 +287,7 @@ void main() {
     final Query q8 = QueryBuilder.delete(
       target: 'users',
       queryNode: FieldEquals("name", "テスト花子"),
-      sortObj: SortObj(field: 'id'),
+      sortObj: SingleSort(field: 'id'),
       returnData: true,
     ).build();
     final QueryResult<User> r8 = db.executeQuery<User>(
@@ -302,7 +302,7 @@ void main() {
     final Query q9 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldStartsWith("name", "テスト花子"),
-      sortObj: SortObj(field: 'id'),
+      sortObj: SingleSort(field: 'id'),
       limit: 2,
     ).build();
     final QueryResult<User> r9 = db.executeQuery<User>(
@@ -326,7 +326,7 @@ void main() {
     final Query q11 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldStartsWith("name", "サンプル"),
-      sortObj: SortObj(field: 'id'),
+      sortObj: SingleSort(field: 'id'),
       limit: 2,
     ).build();
     final QueryResult<User2> r11 = db.executeQuery<User2>(
@@ -374,113 +374,64 @@ void main() {
     // データベース作成とデータ追加
     final db = SimpleSafeDatabase();
     // add
-    final QueryResult<User> r1 = db.executeQuery<User>(
-      QueryBuilder.add(
-        target: 'users',
-        addData: [
-          User(
-            id: '1',
-            name: 'サンプル太郎',
-            age: 25,
-            createdAt: now,
-            updatedAt: now,
-            nestedObj: {},
-          ),
-          User(
-            id: '2',
-            name: 'サンプル次郎',
-            age: 28,
-            createdAt: now,
-            updatedAt: now,
-            nestedObj: {},
-          ),
-          User(
-            id: '3',
-            name: 'サンプル三郎',
-            age: 31,
-            createdAt: now,
-            updatedAt: now,
-            nestedObj: {},
-          ),
-          User(
-            id: '4',
-            name: 'サンプル花子',
-            age: 17,
-            createdAt: now,
-            updatedAt: now,
-            nestedObj: {},
-          ),
-        ],
-      ).build(),
+    final Query q = QueryBuilder.add(
+      target: 'users',
+      addData: [
+        User(
+          id: '1',
+          name: 'サンプル太郎',
+          age: 25,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {},
+        ),
+        User(
+          id: '2',
+          name: 'サンプル次郎',
+          age: 28,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {},
+        ),
+        User(
+          id: '3',
+          name: 'サンプル三郎',
+          age: 31,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {},
+        ),
+        User(
+          id: '4',
+          name: 'サンプル花子',
+          age: 17,
+          createdAt: now,
+          updatedAt: now,
+          nestedObj: {},
+        ),
+      ],
+      cause: Cause(
+        serial: "1",
+        who: Actor(
+          EnumActorType.system,
+          "1",
+          ["tester"],
+          ["users:write:all"],
+          context: {"otherData": "test"},
+        ),
+        when: TemporalTrace(
+          nodes: [TimestampNode(timestamp: DateTime.now(), location: "system")],
+        ),
+        what: "The test of serialize and deserialize.",
+        why: "test",
+        from: "test",
+      ),
+    ).build();
+    expect(
+      q.toDict().toString() == Query.fromDict(q.toDict()).toDict().toString(),
+      true,
     );
-    expect(r1.isNoErrors, true);
-    // シリアライズと復元
-    final usersDB = db.toDict();
-    final db2 = SimpleSafeDatabase.fromDict(usersDB);
-    final users = db.collection('users');
-    final loadedUsers = db2.collection('users');
-    // ユーザー数が一致している
-    expect(loadedUsers.length, equals(4));
-    // IDごとに取得・比較
-    for (int i = 0; i < users.length; i++) {
-      final originalMap = users.raw[i];
-      final loadedMap = loadedUsers.raw[i];
-      final original = User.fromDict(originalMap);
-      final loaded = User.fromDict(loadedMap);
-      expect(loaded.id, equals(original.id));
-      expect(loaded.name, equals(original.name));
-      expect(loaded.age, equals(original.age));
-      expect(
-        loaded.createdAt.toIso8601String(),
-        equals(original.createdAt.toIso8601String()),
-      );
-    }
-  });
-
-  test('save and load test', () {
-    final now = DateTime.now();
-    // データベース作成とデータ追加
-    final db = SimpleSafeDatabase();
-    // add
-    final QueryResult<User> r1 = db.executeQuery<User>(
-      QueryBuilder.add(
-        target: 'users',
-        addData: [
-          User(
-            id: '1',
-            name: 'サンプル太郎',
-            age: 25,
-            createdAt: now,
-            updatedAt: now,
-            nestedObj: {},
-          ),
-          User(
-            id: '2',
-            name: 'サンプル次郎',
-            age: 28,
-            createdAt: now,
-            updatedAt: now,
-            nestedObj: {},
-          ),
-          User(
-            id: '3',
-            name: 'サンプル三郎',
-            age: 31,
-            createdAt: now,
-            updatedAt: now,
-            nestedObj: {},
-          ),
-          User(
-            id: '4',
-            name: 'サンプル花子',
-            age: 17,
-            createdAt: now,
-            updatedAt: now,
-            nestedObj: {},
-          ),
-        ],
-      ).build(),
-    );
+    final QueryResult<User> r1 = db.executeQuery<User>(q);
     expect(r1.isNoErrors, true);
     // シリアライズと復元
     final usersDB = db.toDict();
@@ -553,7 +504,7 @@ void main() {
     final Query q2 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldEquals("nestedObj.a", "test"),
-      sortObj: SortObj(field: 'id', reversed: false),
+      sortObj: SingleSort(field: 'id', reversed: false),
     ).build();
     final QueryResult<User> r2 = db.executeQuery<User>(q2);
     expect(r2.hitCount == 2, true);
@@ -565,7 +516,7 @@ void main() {
     final Query q3 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldLessThan("nestedObj.b", 2),
-      sortObj: SortObj(field: 'id', reversed: false),
+      sortObj: SingleSort(field: 'id', reversed: false),
     ).build();
     final QueryResult<User> r3 = db.executeQuery<User>(q3);
     expect(r3.hitCount == 2, true);
@@ -577,7 +528,7 @@ void main() {
     final Query q4 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldMatchesRegex("name", r'サンプル[太次]郎'),
-      sortObj: SortObj(field: 'id', reversed: false),
+      sortObj: SingleSort(field: 'id', reversed: false),
     ).build();
     final QueryResult<User> r4 = db.executeQuery<User>(q4);
     expect(r4.hitCount == 2, true);
@@ -589,7 +540,7 @@ void main() {
     final Query q5 = QueryBuilder.search(
       target: 'users',
       queryNode: FieldMatchesRegex("nestedObj.a", r'te[sx]t'),
-      sortObj: SortObj(field: 'id', reversed: false),
+      sortObj: SingleSort(field: 'id', reversed: false),
     ).build();
     final QueryResult<User> r5 = db.executeQuery<User>(q5);
     expect(r5.hitCount == 4, true);
